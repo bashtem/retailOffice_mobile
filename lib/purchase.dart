@@ -455,6 +455,7 @@ class DeliveryState extends State<Delivery>{
   List pendingList;
   List selected = List();
   List confirmedItems = List();
+  var snapData;
 
   @override
   void initState() {
@@ -465,7 +466,7 @@ class DeliveryState extends State<Delivery>{
   Widget build(BuildContext context) {
     return FutureBuilder(builder: (context, snapshot){
       if(snapshot.hasData){
-        List snapData = snapshot.data;
+        snapData = snapshot.data;
         pendingList = snapData;
       }
       return Scaffold(

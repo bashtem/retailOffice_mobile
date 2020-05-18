@@ -183,6 +183,8 @@ class _PickItemState extends State<PickItem> {
                         SizedBox(
                           height:15.0,
                         ),
+                        Text("Last updated : "+selectedData['updated_at'], style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold),),
+                        SizedBox(height: 10,),
                         itemsPrices(selectedData['item_qty']),
                         SizedBox(
                           height:25.0,

@@ -145,7 +145,9 @@ class _ManageUserState extends State<ManageUser>{
                             child: Text("Add User", style: TextStyle(color: Colors.white,),), color: Color(0xff1c4b82), shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
                             onPressed: (){
                               global.addUserData.addAll({'name':name.text, 'username':userId.text, 'phone':phone.text, 'email':email.text, 'password':password.text, 'role':userRole, 'status':userStatus });
-                              global.addUser(context);
+                              global.addUser(context, (){
+                                users = global.getUsers();
+                              });
                             },),
                         ),
                         alignment: Alignment.bottomRight,

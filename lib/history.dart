@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-//import 'package:provider/provider.dart';
 import 'global.dart';
 import 'notification.dart';
 
@@ -17,12 +16,13 @@ class _HistoryState extends State<History> with SingleTickerProviderStateMixin{
   var salesLists;
   var transferLists;
   var purchaseLists;
+  var stockMovementList;
   var orderId, purchaseId, itemId, transferId;
 
   @override
   void initState(){
     super.initState();
-    historyTab = TabController(length: 3, vsync: this);
+    historyTab = TabController(length: 4, vsync: this);
     global = GlobalFn();
   }
   @override
@@ -37,15 +37,19 @@ class _HistoryState extends State<History> with SingleTickerProviderStateMixin{
               tabs: <Widget>[
                 Tab(
                   icon: Icon(Icons.shopping_cart, color: Colors.white),
-                  child: Text("Sales",),
+                  child: Text("Sales", style: TextStyle(fontSize: 12),),
                 ),
                 Tab(
                   icon: Icon(Icons.compare_arrows, color: Colors.white),
-                  child: Text("Transfers",),
+                  child: Text("Transfers", style: TextStyle(fontSize: 12),),
                 ),
                 Tab(
                   icon: Icon(Icons.local_shipping, color: Colors.white,),
-                  child: Text("Purchases",),
+                  child: Text("Purchases", style: TextStyle(fontSize: 12),),
+                ),
+                Tab(
+                  icon: Icon(Icons.child_friendly, color: Colors.white,),
+                  child: Text("Movement", style: TextStyle(fontSize: 12),),
                 ),
               ]
           ),
@@ -195,6 +199,75 @@ class _HistoryState extends State<History> with SingleTickerProviderStateMixin{
                                   },
                                 );
                               }, itemCount: purchaseLists.length,);
+                          }else{
+                            return noRecords();
+                          }
+                        }else{
+                          return Center(child: CircularProgressIndicator());
+                        }
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              child: Card(
+                child: Column(
+                  children: <Widget>[
+                    FlatButton(
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(30.0),side: BorderSide(color: Color(0xFF1c4b82))
+                      ),
+                      onPressed:(){
+                        _showDate(context);
+                      },
+                      child: Container(
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(dateValue),
+                            ),
+                            Icon(Icons.today, color: Color(0xFF1c4b82),)
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: FutureBuilder(future:global.stockMovementHistory(dateValue), builder: (context, snapshot){
+                        if(snapshot.hasData){
+                          stockMovementList = snapshot.data;
+                          if(stockMovementList.length >= 1) {
+                            return ListView.separated(
+                              separatorBuilder: (context, index){
+                                return Divider(color: Color(0xff1c4b82), height: 0.0,);
+                              },
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  dense: true,
+                                  title: (stockMovementList[index]['user']['store_id'] == stockMovementList[index]['receiving_store_id'])? Text(stockMovementList[index]['transfer_store']['title']) : Text(stockMovementList[index]['receive_store']['title']),
+                                  subtitle: Row(
+                                    children: <Widget>[
+                                      (stockMovementList[index]['user']['store_id'] == stockMovementList[index]['receiving_store_id'])? Text("STOCK IN ", style: TextStyle(color: Colors.green, ),) : Text("STOCK OUT ", style: TextStyle(color: Colors.red, ),),
+                                      (stockMovementList[index]['user']['store_id'] == stockMovementList[index]['receiving_store_id'])? Icon(Icons.arrow_downward, size: 14, color: Colors.green,) : Icon(Icons.arrow_upward, size: 14, color: Colors.red,)
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: <Widget>[
+                                      Text(stockMovementList[index]['item']['item_name'], style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),),
+                                      Wrap(
+                                        children: <Widget>[
+                                          Icon(Icons.shopping_cart, size: 15,),
+                                          Text(' '+global.qtyFmt.format(double.parse(stockMovementList[index]['quantity']))+" "+stockMovementList[index]['qty_type']['qty_desc'], style: TextStyle(fontSize: 13, color: Color(0xff1c4b82), fontWeight: FontWeight.bold),),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  onTap: (){ },
+                                );
+                              }, itemCount: stockMovementList.length,);
                           }else{
                             return noRecords();
                           }

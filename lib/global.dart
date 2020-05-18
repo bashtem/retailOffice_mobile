@@ -26,13 +26,10 @@ class GlobalFn with ChangeNotifier{
   static Map<String, String> sessionHeader;
   final Map<String, dynamic> updateItemData = Map();
   final Map<String, dynamic> priceUpdate = Map();
-  final Map<String, dynamic> addItemData = Map();
   final Map<String, dynamic> addSupplierData = Map();
   final Map<String, dynamic> updateSupplierData = Map();
   final Map<String, dynamic> purchaseData = Map();
   final Map<String, dynamic> stockTransferData = Map();
-  final Map<String, dynamic> addCustomerData = Map();
-  final Map<String, dynamic> updateCustomerData = Map();
   final Map<String, dynamic> creditData = Map();
   final Map<String, dynamic> payDebitData = Map();
   final Map<String, dynamic> payDiscountData = Map();
@@ -44,6 +41,7 @@ class GlobalFn with ChangeNotifier{
   String qtyType;
   String categoryType;
   Future stockItemDetails;
+  Map<String, dynamic> authToken;
 
   Session get getSession => session;
 
@@ -61,14 +59,14 @@ class GlobalFn with ChangeNotifier{
       'password': pass
     };
     final res = await http.post(_url + "/oauth/token", headers: {"Accept": "application/json"}, body: loginData);
-    Map<String, dynamic> token = json.decode(res.body);
-    if(token['error'] == null){
-        final user = await http.get(_url + "/api/user", headers: {"Accept":"application/json", "Authorization":"Bearer "+token['access_token']});
+    authToken = json.decode(res.body);
+    if(authToken['error'] == null){
+        final user = await http.get(_url + "/api/user", headers: {"Accept":"application/json", "Authorization":"Bearer "+authToken['access_token']});
         Map<String, dynamic> userData = json.decode(user.body);
-        session = Session.data(token, userData);
+        session = Session.data(authToken, userData);
         sessionHeader ={"Accept":"application/json", "Authorization": "Bearer " + session.accessToken};
     }
-    return token;
+    return authToken;
   }
 
   String time(){
@@ -108,15 +106,13 @@ class GlobalFn with ChangeNotifier{
     try{
       var res = await http.post(_url + "/api/updateselectedinventory", headers: sessionHeader, body: jsonEncode(updateItemData));
       var data = json.decode(res.body);
+      Navigator.of(context).pop();
       if(data['status'] == true) {
-        Navigator.of(context).pop();
         successNotify(context, data['response']);
       }else {
-        Navigator.of(context).pop();
         failureNotify(context, data['response']);
       }
     }catch(e){
-      Navigator.of(context).pop();
       failureNotify(context, "Item Update Failed");
     }
   }
@@ -127,28 +123,27 @@ class GlobalFn with ChangeNotifier{
     try{
       var res = await http.post(_url + "/api/updateprice", headers: sessionHeader, body: jsonEncode(priceUpdate));
       var data = json.decode(res.body);
+      Navigator.of(context).pop();
       if(data['status'] == true) {
-        Navigator.of(context).pop();
-        Navigator.of(context).pop();
         successNotify(context, data['response']);
       }else {
-        Navigator.of(context).pop();
         failureNotify(context, data['response']);
       }
     }catch(e){
-      Navigator.of(context).pop();
       failureNotify(context, "Price Update Failed");
     }
   }
 
-  Future addItem(BuildContext context) async{
-    addItemData['itemCategory'] = categoryType;
-    addItemData['itemDescription'] = '';
+  Future addItem(BuildContext context, req, callBack) async{
+    loading(context);
     try{
-      var res = await http.post(_url + "/api/additem", headers: sessionHeader, body: addItemData);
+      var res = await http.post(_url + "/api/additem", headers: sessionHeader, body: req);
       var data = json.decode(res.body);
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
       if(data['status'] == true) {
         successNotify(context, data['response']);
+        callBack();
       }else {
         failureNotify(context, data['response']);
       }
@@ -273,14 +268,16 @@ class GlobalFn with ChangeNotifier{
     return data;
   }
 
-  Future addCustomer(BuildContext context) async{
+  Future addCustomer(BuildContext context, req, callBack) async{
     loading(context);
     try{
-      var res = await http.post(_url + "/api/addcustomer", headers: sessionHeader, body: jsonEncode(addCustomerData));
+      var res = await http.post(_url + "/api/addcustomer", headers: sessionHeader, body: jsonEncode(req));
       var data = json.decode(res.body);
+      Navigator.of(context).pop();
       Navigator.of(context).pop();
       if(data['status'] == true) {
         successNotify(context, data['response']);
+        callBack();
       }else {
         failureNotify(context, data['response']);
       }
@@ -289,10 +286,10 @@ class GlobalFn with ChangeNotifier{
     }
   }
 
-  Future updateCustomer(BuildContext context, Function callback) async{
+  Future updateCustomer(BuildContext context, req, Function callback) async{
     loading(context);
     try{
-      var res = await http.post(_url + "/api/updatecustomer", headers: sessionHeader, body: jsonEncode(updateCustomerData));
+      var res = await http.post(_url + "/api/updatecustomer", headers: sessionHeader, body: jsonEncode(req));
       var data = json.decode(res.body);
       Navigator.of(context).pop();
       callback();
@@ -402,12 +399,16 @@ class GlobalFn with ChangeNotifier{
     return data;
   }
 
-  Future addUser(BuildContext context) async{
+  Future addUser(BuildContext context, callBack) async{
+    loading(context);
     try{
       var res = await http.post(_url + "/api/adduser", headers: sessionHeader, body: jsonEncode(addUserData) );
       var data = json.decode(res.body);
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
       if(data['status'] == true){
         successNotify(context, data['response']);
+        callBack();
       }else{
         failureNotify(context, data['response']);
       }
@@ -426,30 +427,31 @@ class GlobalFn with ChangeNotifier{
      http.get(_url + "/api/userstatus/"+userId.toString()+'/'+status.toString(), headers: sessionHeader);
   }
 
-  Future<List> salesHistory(date) async{
+  Future salesHistory(date) async{
     final res = await http.get(_url + "/api/managersaleshistory/"+date, headers: sessionHeader);
     var data =  json.decode(res.body);
     return data;
   }
 
-  Future<List> transferHistory(date) async{
+  Future transferHistory(date) async{
     final res = await http.get(_url + "/api/managertransferhistory/"+date, headers: sessionHeader);
     var data =  json.decode(res.body);
     return data;
   }
 
-  Future<List> purchaseHistory(date) async{
+  Future purchaseHistory(date) async{
     final res = await http.get(_url + "/api/managerpurchasehistory/"+date, headers: sessionHeader);
     var data =  json.decode(res.body);
     return data;
   }
 
   Future cancleSalesOrder(BuildContext context, orderId, comment) async{
-    var comments;
+    var comments; var req;
     loading(context);
     try{
-      comments = (comment == '')? '/...' : "/"+comment;
-      var res = await http.get(_url + "/api/canclesalesorder/"+orderId.toString()+"/"+time()+comments, headers: sessionHeader );
+      comments = (comment == '')? '...' : comment;
+      req = {'orderId': orderId, 'comments': comments, 'time':time()};
+      var res = await http.post(_url + "/api/canclesalesorder", body: jsonEncode(req), headers: sessionHeader );
       var data = json.decode(res.body);
       Navigator.pop(context);
       return data;
@@ -552,8 +554,80 @@ class GlobalFn with ChangeNotifier{
     return data;
   }
 
+  Future<List> getStores() async{
+    final res = await http.get(_url + "/api/fetchstore", headers: sessionHeader);
+    var data =  json.decode(res.body);
+    return data;
+  }
+
+  Future createStore(BuildContext context, storeData) async{
+    loading(context);
+    try{
+      var res = await http.post(_url + "/api/createstore", body: jsonEncode(storeData), headers: sessionHeader );
+      var data = json.decode(res.body);
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+      if(data['status'] == true){
+        successNotify(context, data['response']);
+      }else{
+        failureNotify(context, data['response']);
+      }
+    }catch(e){
+      failureNotify(context, "Operation Failed");
+    }
+  }
+
+  Future switchStore(BuildContext context, storeId) async{
+    loading(context);
+    try{
+      var res = await http.post(_url + "/api/switchstore", body: jsonEncode({"store_id" : storeId}), headers: sessionHeader );
+      var data = json.decode(res.body);
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+      if(data['status'] == true){
+        successNotify(context, data['response']);
+      }else{
+        failureNotify(context, data['response']);
+      }
+    }catch(e){
+      failureNotify(context, "Operation Failed");
+    }
+  }
+
+  Future<List> getStockMovementData() async{
+    final res = await http.get(_url + "/api/stockmovementdata", headers: sessionHeader);
+    var data =  json.decode(res.body);
+    return data;
+  }
+
+  Future stockMovement(BuildContext context, stockMovementData, callback) async{
+    loading(context);
+    try{
+      var res = await http.post(_url + "/api/stockmovement", body: jsonEncode(stockMovementData), headers: sessionHeader );
+      var data = json.decode(res.body);
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+      if(data['status'] == true){
+        successNotify(context, data['response']);
+        callback();
+      }else{
+        failureNotify(context, data['response']);
+      }
+    }catch(e){
+      failureNotify(context, "Operation Failed");
+    }
+  }
+
+  Future stockMovementHistory(date) async{
+    final res = await http.get(_url + "/api/stockmovementhistory/"+date, headers: sessionHeader);
+    var data =  json.decode(res.body);
+    return data;
+  }
+
 
 }
+
+
 
 class Session{
   String accessToken;
@@ -562,7 +636,9 @@ class Session{
   String name;
   int userId;
   String userRole;
-  Session({this.accessToken, this.refreshToken, this.tokenType, this.name, this.userId, this.userRole});
+  var merchantId;
+  var storeId;
+  Session({this.accessToken, this.refreshToken, this.tokenType, this.name, this.userId, this.userRole, this.merchantId, this.storeId});
   factory Session.data(Map<String, dynamic> token, Map<String, dynamic> user){
     return Session(
       accessToken : token['access_token'],
@@ -571,6 +647,8 @@ class Session{
       name : user['name'],
       userId : user['user_id'],
       userRole: user['user_role']['role_desc'],
+      merchantId: user['merchant_id'],
+      storeId: user['store_id']
     );
   }
 }

@@ -62,7 +62,7 @@ class _CustomerState extends State<Customer> {
             body: Container(
                 child: Card(
               child: (snapshot.hasData
-                  ? (snapshot.data.length < 1
+                  ? (snapshot.data['cus'].length < 1
                       ? noRecords()
                       : ListView.builder(
                           itemBuilder: (context, index) {
@@ -836,15 +836,15 @@ class _UpdateCustomerState extends State<UpdateCustomer>{
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0)),
                             onPressed: () {
-                              global.updateCustomerData.addAll({
+                              var updateCusData = {
                                 "cus_id":widget.data['cus_id'],
                                 "name": updateName.text,
                                 "phone": updatePhone.text,
                                 "email": updateEmail.text,
                                 "address": updateAddress.text,
                                 "payment": updatePayment
-                              });
-                              global.updateCustomer(context, (){
+                              };
+                              global.updateCustomer(context, updateCusData, (){
                                   Navigator.of(context).pop();
                                   getCustomers = global.getCustomers();
                                   customerDetails = global.getEachCustomer(widget.data['cus_id']);
@@ -976,14 +976,17 @@ class _AddCustomerState extends State<AddCustomer> {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5.0)),
                                   onPressed: () {
-                                    global.addCustomerData.addAll({
+                                    global.addCustomer(context, {
                                       "name": name.text,
                                       "phone": phone.text,
                                       "email": email.text,
                                       "address": address.text,
                                       "payment": payment
-                                    });
-                                    global.addCustomer(context);
+                                    }, (){
+                                      setState(() {
+                                        getCustomers = global.getCustomers();
+                                      });
+                                    } );
                                   })),
                           alignment: Alignment.bottomRight,
                         ),

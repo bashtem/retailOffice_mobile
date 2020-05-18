@@ -53,7 +53,7 @@ class _ReportState extends State<Report>{
           itemsList.forEach((x){
             totalAmount+= double.parse(x['amount']);
             totalQty+= double.parse(x["qty"]);
-            totalTicket+= (x['tickets'] != null)? int.parse(x["tickets"]): 0;
+            totalTicket+= (x['tickets'] != null)? (x["tickets"]): 0;
           });
         }
          return Scaffold(
@@ -330,7 +330,7 @@ class _ReportState extends State<Report>{
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Expanded(child: Text(itemsList[index]['name'], softWrap: true, ), flex: 2,),
-                        Expanded(child: Text((itemsList[index]["tickets"])?? '0', style: TextStyle(fontSize: 14, color: Colors.red),), flex: 1,),
+                        Expanded(child: Text((itemsList[index]["tickets"]).toString()?? '0', style: TextStyle(fontSize: 14, color: Colors.red),), flex: 1,),
                         Expanded(child: Text(global.qtyFmt.format(double.parse(itemsList[index]["qty"])), style: TextStyle(fontSize: 12)), flex: 1,),
                         Expanded(child: Align(alignment: Alignment.centerRight, child: Text(global.priceFmt.format(double.parse(itemsList[index]["amount"])), style: TextStyle(fontSize: 11),)), flex: 1,)
                       ],

@@ -104,6 +104,7 @@ class _InventoryState extends State<Inventory>{
   }
 
   Widget addItem(){
+    var itemCategoryId;
    return Scaffold(
      appBar: AppBar(
        title: Text("Add Item"),
@@ -132,16 +133,18 @@ class _InventoryState extends State<Inventory>{
                      padding: const EdgeInsets.only(
                          left: 18.0, right: 18.0, bottom: 18.0),
                      child: DropDownWidget(itemCategory, (picked){
-
+                        itemCategoryId = picked;
                      }),
                    ),
                    Align(
                      child: Padding(
                        padding: const EdgeInsets.only(right: 18.0),
                        child: RaisedButton(onPressed: () {
-                         print("add Item");
-                         global.addItemData['itemName'] = itemName.text.toString();
-                         global.addItem(context);
+                         global.addItem(context, {'itemName': itemName.text.toString(), 'itemCategory':itemCategoryId.toString(), 'itemDescription' : ""}, (){
+                           setState(() {
+                             inventoryFuture = global.getInventory();
+                           });
+                         });
                        },
                          child: Text(
                            "Add Item", style: TextStyle(color: Colors.white,),),

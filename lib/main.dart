@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:retailoffice/create_store.dart';
+import 'package:retailoffice/stock_movement.dart';
 import 'global.dart';
 import 'login.dart';
 import 'inventory.dart';
@@ -27,7 +29,7 @@ class RetailOffice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-       builder: (context) => GlobalFn(),
+      create: (context) => GlobalFn(),
       child: MaterialApp(
           theme: ThemeData(
               appBarTheme: AppBarTheme(color: Color(0xff1c4b82)),
@@ -56,6 +58,8 @@ class RetailOffice extends StatelessWidget {
             "history" : (BuildContext context)=>History(),
             "report" : (BuildContext context)=>Report(),
             "ticket" : (BuildContext context)=>Ticket(),
+            "stock_movement" : (BuildContext context)=>StockMovement(),
+            "create_store" : (BuildContext context)=>CreateStore(),
           },
       ),
     );
