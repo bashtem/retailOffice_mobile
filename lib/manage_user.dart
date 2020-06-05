@@ -337,6 +337,7 @@ class CustomSwitchState extends State<CustomSwitch>{
   void initState() {
     super.initState();
     switchValue = checkSwitchValue();
+    global = GlobalFn();
   }
   @override
   Widget build(BuildContext context) {

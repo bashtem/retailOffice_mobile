@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:retailoffice/purchase.dart';
 import 'package:retailoffice/quantity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,19 +27,22 @@ class _DashboardState extends State<Dashboard> {
   File profilePix;
   SharedPreferences prefs;
   List stores;
-  DateTime today;
+  DateTime today = DateTime.now();
   TimeOfDay timeOfDay = TimeOfDay.fromDateTime(DateTime.now());
+  String date;
+  String storeTitle = '';
 
   @override
   void initState() {
     super.initState();
     global = GlobalFn();
-    today = DateTime.now();
+    date = today.day.toString()+"-"+today.month.toString()+"-"+today.year.toString();
     setProfilePix();
     dashboardFuture = global.dashboard();
     timer = Timer.periodic(Duration(seconds: 15), (timer) {
       dashboardFuture = global.dashboard();
       timeOfDay = TimeOfDay.fromDateTime(DateTime.now());
+      date = today.day.toString()+"-"+today.month.toString()+"-"+today.year.toString();
       setState(() {});
     });
   }
@@ -51,6 +55,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+
     return FutureBuilder(
         future: dashboardFuture,
         builder: (context, snapshot) {
@@ -218,439 +223,451 @@ class _DashboardState extends State<Dashboard> {
                                     topLeft: Radius.circular(40.0),
                                     topRight: Radius.circular(40.0))),
                             child: ((snapshot.hasData)
-                                ? SingleChildScrollView(
-                                    child: Column(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        height: 25.0,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                                        child: Align(alignment: Alignment.centerLeft,child: Text(today.day.toString()+"-"+today.month.toString()+"-"+today.year.toString()+" / "+timeOfDay.format(context), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),)),
-                                      ),
-                                      SizedBox(height: 10,),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: <Widget>[
-                                          Card(
-                                            elevation: 5.0,
-                                            child: InkWell(
-                                              child: Container(
-                                                  width: 160,
-                                                  height: 80,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    children: <Widget>[
-                                                      Icon(
-                                                        Icons.store,
-                                                        color:
-                                                            Color(0xffdc3545),
-                                                      ),
-                                                      Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceAround,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            global.priceFmt.format(
-                                                                dashboardData[
-                                                                    'salesAmount']),
-                                                            style: TextStyle(
-                                                                fontSize: 20,
-                                                                color: Color(
-                                                                    0xffdc3545)),
-                                                          ),
-                                                          Wrap(
-                                                            spacing: 5.0,
-                                                            crossAxisAlignment:
-                                                                WrapCrossAlignment
-                                                                    .center,
-                                                            children: <Widget>[
-                                                              Icon(
-                                                                Icons.lens,
-                                                                size: 7.0,
-                                                                color: Color(
-                                                                    0xffdc3545),
-                                                              ),
-                                                              Text(
-                                                                "Sales",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Color(
-                                                                      0xff6c7b95),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  )),
-                                              splashColor: Color(0xfffab7be),
-                                              onTap: () {
-                                                storesFuture =
-                                                    global.getStores();
-                                                viewStores();
-                                              },
-                                            ),
+                                ? Column(
+                                children: <Widget>[
+                                    SizedBox(
+                                      height: 20.0,
+                                    ),
+                                    FittedBox(
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                                          child: Wrap(
+                                            alignment: WrapAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              Text(storeTitle == '' ? Provider.of<GlobalFn>(context).getStore : storeTitle, style: TextStyle( color: Color(0xffdc3545), fontSize: 16 )),
+                                              Text(date+" / "+timeOfDay.format(context), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),),
+                                            ],
                                           ),
-                                          Card(
-                                            elevation: 5.0,
-                                            child: InkWell(
-                                              child: Container(
-                                                  width: 160,
-                                                  height: 80,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    children: <Widget>[
-                                                      Icon(
-                                                        Icons.add_shopping_cart,
-                                                        color:
-                                                            Color(0xff007bff),
-                                                      ),
-                                                      Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceAround,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            global.numFmt.format(
-                                                                dashboardData[
-                                                                    'salesCount']),
-                                                            style: TextStyle(
-                                                                fontSize: 20,
-                                                                color: Color(
-                                                                    0xff007bff)),
-                                                          ),
-                                                          Wrap(
-                                                            spacing: 5.0,
-                                                            crossAxisAlignment:
-                                                                WrapCrossAlignment
-                                                                    .center,
-                                                            children: <Widget>[
-                                                              Icon(
-                                                                Icons.lens,
-                                                                size: 7.0,
-                                                                color: Color(
-                                                                    0xff007bff),
-                                                              ),
-                                                              Text(
-                                                                "Tickets",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Color(
-                                                                      0xff6c7b95),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  )),
-                                              splashColor: Color(0xff99caff),
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    context, 'ticket');
-                                              },
-                                            ),
-                                          ),
-                                        ],
+                                        ),
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: <Widget>[
-                                          Card(
-                                            elevation: 2.0,
-                                            child: InkWell(
-                                              child: Container(
-                                                  width: 160,
-                                                  height: 80,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    children: <Widget>[
-                                                      Icon(
-                                                        FontAwesomeIcons.box,
-                                                        size: 20,
-                                                        color: Color(
-                                                          0xff293462,
+                                    ),
+                                    SizedBox(height: 10,),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        Card(
+                                          elevation: 5.0,
+                                          child: InkWell(
+                                            child: Container(
+                                                width: 160,
+                                                height: 80,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.store,
+                                                      color:
+                                                          Color(0xffdc3545),
+                                                    ),
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: <Widget>[
+                                                        Text(
+                                                          global.priceFmt.format(
+                                                              dashboardData[
+                                                                  'salesAmount']),
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              color: Color(
+                                                                  0xffdc3545)),
                                                         ),
-                                                      ),
-                                                      Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceAround,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            global.qtyFmt.format(
-                                                                double.parse(
-                                                                    dashboardData[
-                                                                        'totalQuantity'].toString())),
-                                                            style: TextStyle(
-                                                                fontSize: 17,
+                                                        Wrap(
+                                                          spacing: 5.0,
+                                                          crossAxisAlignment:
+                                                              WrapCrossAlignment
+                                                                  .center,
+                                                          children: <Widget>[
+                                                            Icon(
+                                                              Icons.lens,
+                                                              size: 7.0,
+                                                              color: Color(
+                                                                  0xffdc3545),
+                                                            ),
+                                                            Text(
+                                                              "Sales",
+                                                              style:
+                                                                  TextStyle(
                                                                 color: Color(
-                                                                    0xff293462)),
-                                                          ),
-                                                          Wrap(
-                                                            spacing: 5.0,
-                                                            crossAxisAlignment:
-                                                                WrapCrossAlignment
-                                                                    .center,
-                                                            children: <Widget>[
-                                                              Icon(
-                                                                Icons.lens,
-                                                                size: 7.0,
-                                                                color: Color(
-                                                                    0xff293462),
+                                                                    0xff6c7b95),
                                                               ),
-                                                              Text(
-                                                                "Total Quantity",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Color(
-                                                                      0xff6c7b95),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  )),
-                                              splashColor: Color(0xff909dd0),
-                                              onTap: () {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) {
-                                                  return Quantity();
-                                                }));
-                                              },
-                                            ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                )),
+                                            splashColor: Color(0xfffab7be),
+                                            onTap: () {
+                                              storesFuture =
+                                                  global.getStores();
+                                              viewStores();
+                                            },
                                           ),
-                                          Card(
-                                            elevation: 2.0,
-                                            child: InkWell(
-                                              child: Container(
-                                                  width: 160,
-                                                  height: 80,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    children: <Widget>[
-                                                      Text(
-                                                        "NGN",
-                                                        style: TextStyle(
-                                                            color: Color(
-                                                                0xfff88020),
-                                                            fontSize: 16),
-                                                      ),
-                                                      Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceAround,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            global.priceFmt.format(
-                                                                double.parse(
-                                                                    dashboardData[
-                                                                        'stockValue'].toString())),
-                                                            style: TextStyle(
-                                                                fontSize: 15,
+                                        ),
+                                        Card(
+                                          elevation: 5.0,
+                                          child: InkWell(
+                                            child: Container(
+                                                width: 160,
+                                                height: 80,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.add_shopping_cart,
+                                                      color:
+                                                          Color(0xff007bff),
+                                                    ),
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: <Widget>[
+                                                        Text(
+                                                          global.numFmt.format(
+                                                              dashboardData[
+                                                                  'salesCount']),
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              color: Color(
+                                                                  0xff007bff)),
+                                                        ),
+                                                        Wrap(
+                                                          spacing: 5.0,
+                                                          crossAxisAlignment:
+                                                              WrapCrossAlignment
+                                                                  .center,
+                                                          children: <Widget>[
+                                                            Icon(
+                                                              Icons.lens,
+                                                              size: 7.0,
+                                                              color: Color(
+                                                                  0xff007bff),
+                                                            ),
+                                                            Text(
+                                                              "Tickets",
+                                                              style:
+                                                                  TextStyle(
                                                                 color: Color(
-                                                                    0xfff88020)),
-                                                          ),
-                                                          Wrap(
-                                                            spacing: 5.0,
-                                                            crossAxisAlignment:
-                                                                WrapCrossAlignment
-                                                                    .center,
-                                                            children: <Widget>[
-                                                              Icon(
-                                                                Icons.lens,
-                                                                size: 7.0,
-                                                                color: Color(
-                                                                    0xfff88020),
+                                                                    0xff6c7b95),
                                                               ),
-                                                              Text(
-                                                                "Stock Value",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Color(
-                                                                      0xff6c7b95),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  )),
-                                              splashColor: Color(0xfffbb174),
-                                              onTap: () {
-                                                print('hello world');
-                                              },
-                                            ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                )),
+                                            splashColor: Color(0xff99caff),
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  context, 'ticket');
+                                            },
                                           ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: <Widget>[
-                                          Card(
-                                            elevation: 2.0,
-                                            child: InkWell(
-                                              child: Container(
-                                                  width: 160,
-                                                  height: 80,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    children: <Widget>[
-                                                      Icon(
-                                                        Icons.swap_horiz,
-                                                        color:
-                                                            Color(0xff28a745),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        Card(
+                                          elevation: 2.0,
+                                          child: InkWell(
+                                            child: Container(
+                                                width: 160,
+                                                height: 80,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      FontAwesomeIcons.box,
+                                                      size: 20,
+                                                      color: Color(
+                                                        0xff293462,
                                                       ),
-                                                      Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceAround,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            global.numFmt.format(
-                                                                dashboardData[
-                                                                    'transferCount']),
-                                                            style: TextStyle(
-                                                                fontSize: 20,
+                                                    ),
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: <Widget>[
+                                                        Text(
+                                                          global.qtyFmt.format(
+                                                              double.parse(
+                                                                  dashboardData[
+                                                                      'totalQuantity'].toString())),
+                                                          style: TextStyle(
+                                                              fontSize: 17,
+                                                              color: Color(
+                                                                  0xff293462)),
+                                                        ),
+                                                        Wrap(
+                                                          spacing: 5.0,
+                                                          crossAxisAlignment:
+                                                              WrapCrossAlignment
+                                                                  .center,
+                                                          children: <Widget>[
+                                                            Icon(
+                                                              Icons.lens,
+                                                              size: 7.0,
+                                                              color: Color(
+                                                                  0xff293462),
+                                                            ),
+                                                            Text(
+                                                              "Total Quantity",
+                                                              style:
+                                                                  TextStyle(
                                                                 color: Color(
-                                                                    0xff28a745)),
-                                                          ),
-                                                          Wrap(
-                                                            spacing: 5.0,
-                                                            crossAxisAlignment:
-                                                                WrapCrossAlignment
-                                                                    .center,
-                                                            children: <Widget>[
-                                                              Icon(
-                                                                Icons.lens,
-                                                                size: 7.0,
-                                                                color: Color(
-                                                                    0xff28a745),
+                                                                    0xff6c7b95),
                                                               ),
-                                                              Text(
-                                                                "Transfers",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Color(
-                                                                      0xff6c7b95),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  )),
-                                              splashColor: Color(0xff98e6ab),
-                                              onTap: () {
-                                                print('hello world');
-                                              },
-                                            ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                )),
+                                            splashColor: Color(0xff909dd0),
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return Quantity();
+                                              }));
+                                            },
                                           ),
-                                          Card(
-                                            elevation: 2.0,
-                                            child: InkWell(
-                                              child: Container(
-                                                  width: 160,
-                                                  height: 80,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    children: <Widget>[
-                                                      Icon(
-                                                        Icons.local_shipping,
-                                                        color:
-                                                            Color(0xff029ACF),
-                                                      ),
-                                                      Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceAround,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            global.numFmt.format(
-                                                                dashboardData[
-                                                                    'purchaseCount']),
-                                                            style: TextStyle(
-                                                                fontSize: 20,
+                                        ),
+                                        Card(
+                                          elevation: 2.0,
+                                          child: InkWell(
+                                            child: Container(
+                                                width: 160,
+                                                height: 80,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      "NGN",
+                                                      style: TextStyle(
+                                                          color: Color(
+                                                              0xfff88020),
+                                                          fontSize: 16),
+                                                    ),
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: <Widget>[
+                                                        Text(
+                                                          global.priceFmt.format(
+                                                              double.parse(
+                                                                  dashboardData[
+                                                                      'stockValue'].toString())),
+                                                          style: TextStyle(
+                                                              fontSize: 15,
+                                                              color: Color(
+                                                                  0xfff88020)),
+                                                        ),
+                                                        Wrap(
+                                                          spacing: 5.0,
+                                                          crossAxisAlignment:
+                                                              WrapCrossAlignment
+                                                                  .center,
+                                                          children: <Widget>[
+                                                            Icon(
+                                                              Icons.lens,
+                                                              size: 7.0,
+                                                              color: Color(
+                                                                  0xfff88020),
+                                                            ),
+                                                            Text(
+                                                              "Stock Value",
+                                                              style:
+                                                                  TextStyle(
                                                                 color: Color(
-                                                                    0xff029ACF)),
-                                                          ),
-                                                          Wrap(
-                                                            spacing: 5.0,
-                                                            crossAxisAlignment:
-                                                                WrapCrossAlignment
-                                                                    .center,
-                                                            children: <Widget>[
-                                                              Icon(
-                                                                Icons.lens,
-                                                                size: 7.0,
-                                                                color: Color(
-                                                                    0xff029ACF),
+                                                                    0xff6c7b95),
                                                               ),
-                                                              Text(
-                                                                "Purchase Orders",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Color(
-                                                                      0xff6c7b95),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  )),
-                                              splashColor: Color(0xff81dcfe),
-                                              onTap: () {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) {
-                                                  return Delivery();
-                                                }));
-                                              },
-                                            ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                )),
+                                            splashColor: Color(0xfffbb174),
+                                            onTap: () {
+                                              print('hello world');
+                                            },
                                           ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 20.0,
-                                      ),
-                                      Divider(
-                                        color: Color(0xFF1c4b82),
-                                        height: 1.0,
-                                      ),
-                                      GridView.count(
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        Card(
+                                          elevation: 2.0,
+                                          child: InkWell(
+                                            child: Container(
+                                                width: 160,
+                                                height: 80,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.swap_horiz,
+                                                      color:
+                                                          Color(0xff28a745),
+                                                    ),
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: <Widget>[
+                                                        Text(
+                                                          global.numFmt.format(
+                                                              dashboardData[
+                                                                  'transferCount']),
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              color: Color(
+                                                                  0xff28a745)),
+                                                        ),
+                                                        Wrap(
+                                                          spacing: 5.0,
+                                                          crossAxisAlignment:
+                                                              WrapCrossAlignment
+                                                                  .center,
+                                                          children: <Widget>[
+                                                            Icon(
+                                                              Icons.lens,
+                                                              size: 7.0,
+                                                              color: Color(
+                                                                  0xff28a745),
+                                                            ),
+                                                            Text(
+                                                              "Transfers",
+                                                              style:
+                                                                  TextStyle(
+                                                                color: Color(
+                                                                    0xff6c7b95),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                )),
+                                            splashColor: Color(0xff98e6ab),
+                                            onTap: () {
+                                              print('hello world');
+                                            },
+                                          ),
+                                        ),
+                                        Card(
+                                          elevation: 2.0,
+                                          child: InkWell(
+                                            child: Container(
+                                                width: 160,
+                                                height: 80,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.local_shipping,
+                                                      color:
+                                                          Color(0xff029ACF),
+                                                    ),
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: <Widget>[
+                                                        Text(
+                                                          global.numFmt.format(
+                                                              dashboardData[
+                                                                  'purchaseCount']),
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              color: Color(
+                                                                  0xff029ACF)),
+                                                        ),
+                                                        Wrap(
+                                                          spacing: 5.0,
+                                                          crossAxisAlignment:
+                                                              WrapCrossAlignment
+                                                                  .center,
+                                                          children: <Widget>[
+                                                            Icon(
+                                                              Icons.lens,
+                                                              size: 7.0,
+                                                              color: Color(
+                                                                  0xff029ACF),
+                                                            ),
+                                                            Text(
+                                                              "Purchase Orders",
+                                                              style:
+                                                                  TextStyle(
+                                                                color: Color(
+                                                                    0xff6c7b95),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                )),
+                                            splashColor: Color(0xff81dcfe),
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return Delivery();
+                                              }));
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 10.0,
+                                    ),
+                                    Divider(
+                                      color: Color(0xFF1c4b82),
+                                      height: 1.0,
+                                    ),
+                                    Expanded(
+                                      child: GridView.count(
                                         shrinkWrap: true,
                                         primary: false,
                                         padding: const EdgeInsets.all(5.0),
-                                        crossAxisSpacing: 1.0,
+                                        crossAxisSpacing: 10.0,
                                         crossAxisCount: 3,
                                         children: <Widget>[
                                           Column(
+                                            mainAxisSize: MainAxisSize.min,
                                             children: <Widget>[
                                               IconButton(
                                                   iconSize: 40,
@@ -822,9 +839,10 @@ class _DashboardState extends State<Dashboard> {
                                             ],
                                           ),
                                         ],
-                                      )
-                                    ],
-                                  ))
+                                      ),
+                                    )
+                                ],
+                                  )
                                 : Center(child: CircularProgressIndicator()))),
                       )
                     : Container(
@@ -937,6 +955,7 @@ class _DashboardState extends State<Dashboard> {
                                         stores[index]['store_id'])
                                     .then((value) {
                                   dashboardFuture = global.dashboard();
+                                  storeTitle = value;
                                   setState(() {});
                                 });
                               },

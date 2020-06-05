@@ -82,6 +82,7 @@ class _LandingPageState extends State<LandingPage> {
           child: Container(
             child:  Login(),
           ),
-        ));
+        )
+    );
   }
 }

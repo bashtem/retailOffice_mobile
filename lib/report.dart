@@ -53,7 +53,7 @@ class _ReportState extends State<Report>{
           itemsList.forEach((x){
             totalAmount+= double.parse(x['amount']);
             totalQty+= double.parse(x["qty"]);
-            totalTicket+= (x['tickets'] != null)? (x["tickets"]): 0;
+            totalTicket+= ((x['tickets']) != null)? int.parse(x["tickets"]): 0;
           });
         }
          return Scaffold(

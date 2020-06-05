@@ -20,7 +20,7 @@ class GlobalFn with ChangeNotifier{
   static String _clientId = '1';
   static String _clientSecret = 'oQFN96Gu1Ot7uKqG26A3JXO3eg2erGVq1PWPU0kh';
   static String _grantType = 'password';
-//  static String _url = "http://$phoneIP/digitalfish/public";
+//  static String _url = "http://$officeIP/digitalfish/public";
   static String _url = "http://www.digitalfisheries.com/portal/public";
   static Session session;
   static Map<String, String> sessionHeader;
@@ -40,10 +40,13 @@ class GlobalFn with ChangeNotifier{
   Map purchaseItemName;
   String qtyType;
   String categoryType;
+  String storeTitle = '';
   Future stockItemDetails;
   Map<String, dynamic> authToken;
 
   Session get getSession => session;
+
+  String get getStore => storeTitle;
 
   set setStockItemDetails(Future value){
     stockItemDetails = value;
@@ -64,6 +67,7 @@ class GlobalFn with ChangeNotifier{
         final user = await http.get(_url + "/api/user", headers: {"Accept":"application/json", "Authorization":"Bearer "+authToken['access_token']});
         Map<String, dynamic> userData = json.decode(user.body);
         session = Session.data(authToken, userData);
+        storeTitle = userData['user_store']['title'].toString();
         sessionHeader ={"Accept":"application/json", "Authorization": "Bearer " + session.accessToken};
     }
     return authToken;
@@ -585,7 +589,9 @@ class GlobalFn with ChangeNotifier{
       Navigator.of(context).pop();
       Navigator.of(context).pop();
       if(data['status'] == true){
+        storeTitle = data['store']['title'].toString();
         successNotify(context, data['response']);
+        return storeTitle;
       }else{
         failureNotify(context, data['response']);
       }
@@ -626,7 +632,6 @@ class GlobalFn with ChangeNotifier{
 
 
 }
-
 
 
 class Session{
