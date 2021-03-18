@@ -271,8 +271,8 @@ class _DashboardState extends State<Dashboard> {
                                                       children: <Widget>[
                                                         Text(
                                                           global.priceFmt.format(
-                                                              dashboardData[
-                                                                  'salesAmount']),
+                                                             double.parse(dashboardData[
+                                                                  'salesAmount'])),
                                                           style: TextStyle(
                                                               fontSize: 20,
                                                               color: Color(
@@ -427,7 +427,7 @@ class _DashboardState extends State<Dashboard> {
                                                                   0xff293462),
                                                             ),
                                                             Text(
-                                                              "Total Quantity",
+                                                              "Total Cartons",
                                                               style:
                                                                   TextStyle(
                                                                 color: Color(

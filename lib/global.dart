@@ -10,9 +10,8 @@ import 'package:intl/intl.dart';
 
 
 class GlobalFn with ChangeNotifier{
-  static final phoneIP = '172.20.10.3';
-  static final officeIP = '192.168.15.3';
-  final priceFmt = NumberFormat("#,##0.00", "en_US");
+
+  final NumberFormat priceFmt = NumberFormat("#,##0.00", "en_US");
   final numFmt = NumberFormat("#,##0", "en_US");
   final qtyFmt = NumberFormat("#,##0.###", "en_US");
   final genQtyFmt = NumberFormat("###0.###", "en_US");
@@ -20,8 +19,8 @@ class GlobalFn with ChangeNotifier{
   static String _clientId = '1';
   static String _clientSecret = 'oQFN96Gu1Ot7uKqG26A3JXO3eg2erGVq1PWPU0kh';
   static String _grantType = 'password';
-//  static String _url = "http://$officeIP/digitalfish/public";
-  static String _url = "http://www.digitalfisheries.com/portal/public";
+  static String _url = "http://192.168.1.3/digitalfish/public";
+  // static String _url = "http://www.digitalfisheries.com/portal/public";
   static Session session;
   static Map<String, String> sessionHeader;
   final Map<String, dynamic> updateItemData = Map();
@@ -162,12 +161,15 @@ class GlobalFn with ChangeNotifier{
     return data;
   }
 
-  Future addSupplier(BuildContext context) async{
+  Future addSupplier(BuildContext context, callBack) async{
+    loading(context);
     try{
       var res = await http.post(_url + "/api/addsupplier", headers: sessionHeader, body: jsonEncode(addSupplierData));
       var data = json.decode(res.body);
-      if(data['status'] == true) {
         Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      if(data['status'] == true) {
+        callBack();
         successNotify(context, data['response']);
       }else {
         failureNotify(context, data['response']);
@@ -177,13 +179,16 @@ class GlobalFn with ChangeNotifier{
     }
   }
 
-  Future updateSupplier(BuildContext context) async{
+  Future updateSupplier(BuildContext context, callBack) async{
+    loading(context);
     try{
       var res = await http.post(_url + "/api/updatesupplier", headers: sessionHeader, body: jsonEncode(updateSupplierData));
       var data = json.decode(res.body);
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
       if(data['status'] == true) {
-        Navigator.of(context).pop();
-        Navigator.of(context).pop();
+        callBack();
         successNotify(context, data['response']);
       }else {
         failureNotify(context, data['response']);
@@ -201,11 +206,13 @@ class GlobalFn with ChangeNotifier{
   }
 
   Future savePurchase(BuildContext context) async{
+    loading(context);
     try{
       var res = await http.post(_url + "/api/savepurchase", headers: sessionHeader, body: {"data":jsonEncode(purchaseData), "list":jsonEncode(purchaseList), "time":time()});
       var data = json.decode(res.body);
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
       if(data['status'] == true) {
-        Navigator.of(context).pop();
         purchaseList.clear();
         successNotify(context, data['response']);
       }else {
@@ -308,10 +315,12 @@ class GlobalFn with ChangeNotifier{
   }
 
   Future creditProcess(BuildContext context, callBack) async{
+    loading(context);
     creditData['time'] = time();
     try{
       var res = await http.post(_url + "/api/creditprocess", headers: sessionHeader, body: jsonEncode(creditData));
       var data = json.decode(res.body);
+      Navigator.of(context).pop();
       if(data['status'] == true) {
         successNotify(context, data['response']);
         callBack();
@@ -342,10 +351,12 @@ class GlobalFn with ChangeNotifier{
   }
 
   Future payDiscount(BuildContext context, callBack) async{
+    loading(context);
     payDiscountData['time'] = time();
     try{
       var res = await http.post(_url + "/api/paydiscount", headers: sessionHeader, body: jsonEncode(payDiscountData));
       var data = json.decode(res.body);
+      Navigator.of(context).pop();
       if(data['status'] == true) {
         successNotify(context, data['response']);
         callBack();
@@ -358,10 +369,12 @@ class GlobalFn with ChangeNotifier{
   }
 
   Future addDiscount(BuildContext context, callBack) async{
+    loading(context);
     addDiscountData['time'] = time();
     try{
       var res = await http.post(_url + "/api/adddiscount", headers: sessionHeader, body: jsonEncode(addDiscountData));
       var data = json.decode(res.body);
+      Navigator.of(context).pop();
       if(data['status'] == true) {
         successNotify(context, data['response']);
         callBack();
@@ -590,6 +603,7 @@ class GlobalFn with ChangeNotifier{
       Navigator.of(context).pop();
       if(data['status'] == true){
         storeTitle = data['store']['title'].toString();
+        session.storeId = data['store']['store_id'];
         successNotify(context, data['response']);
         return storeTitle;
       }else{

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import 'package:provider/provider.dart';
 import 'global.dart';
 import 'personalisedSearch.dart';
 import 'notification.dart';
@@ -21,7 +20,6 @@ class _CustomerState extends State<Customer> {
   void initState() {
     super.initState();
     global = GlobalFn();
-    getCustomers = global.getCustomers();
   }
 
   @override
@@ -55,7 +53,9 @@ class _CustomerState extends State<Customer> {
               onPressed: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (BuildContext context) {
-                  return AddCustomer();
+                  return AddCustomer(callBack: (){
+                    setState(() { });
+                  },);
                 }));
               },
             ),
@@ -86,7 +86,7 @@ class _CustomerState extends State<Customer> {
                   : Center(child: CircularProgressIndicator())),
             )));
       },
-      future: getCustomers,
+      future: global.getCustomers(),
     );
   }
 
@@ -250,6 +250,13 @@ class ViewCustomerState extends State<ViewCustomer> with SingleTickerProviderSta
                                         color: Color(0xff1c4b82),
                                       ),
                                       title: Text(pickedCustomer['cus_address']),
+                                    ),
+                                    ListTile(
+                                      leading: Icon(
+                                        Icons.group,
+                                        color: Color(0xff1c4b82),
+                                      ),
+                                      title: Text(pickedCustomer['cus_type']),
                                     ),
                                   ],
                                 ),
@@ -742,6 +749,8 @@ class _UpdateCustomerState extends State<UpdateCustomer>{
   TextEditingController updateEmail = TextEditingController();
   TextEditingController updateAddress = TextEditingController();
   var updatePayment;
+  List cusType = ["WALK-IN", "REGULAR"];
+  var pickedCusType;
 
   @override void initState() {
     global = new GlobalFn();
@@ -749,11 +758,12 @@ class _UpdateCustomerState extends State<UpdateCustomer>{
     updatePhone.text =  widget.data['cus_mobile'];
     updateEmail.text = widget.data['cus_mail'];
     updateAddress.text = widget.data['cus_address'];
+    pickedCusType = cusType[cusType.indexOf(widget.data['cus_type'])];
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     var index = widget.paymentTypes.indexWhere((each)=> each['payment_id'] == (widget.data['payment_id']));
     return Scaffold(
       appBar: AppBar(
@@ -819,6 +829,23 @@ class _UpdateCustomerState extends State<UpdateCustomer>{
                       updatePayment = value;
                     }, index: index,  ),
                   ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.group,
+                      color: Color(0xff1c4b82),
+                    ),
+                    title: DropdownButtonFormField(
+                      value: pickedCusType,
+                      items: cusType.map((each){
+                        return DropdownMenuItem(child: Text(each), value: each,);
+                      }).toList(),
+                      onChanged: (value){
+                        setState(() {
+                          pickedCusType = value;
+                        });
+                      },
+                    )
+                  ),
                   SizedBox(
                     height: 30.0,
                   ),
@@ -842,7 +869,8 @@ class _UpdateCustomerState extends State<UpdateCustomer>{
                                 "phone": updatePhone.text,
                                 "email": updateEmail.text,
                                 "address": updateAddress.text,
-                                "payment": updatePayment
+                                "payment": updatePayment,
+                                "cusType" : pickedCusType
                               };
                               global.updateCustomer(context, updateCusData, (){
                                   Navigator.of(context).pop();
@@ -864,6 +892,10 @@ class _UpdateCustomerState extends State<UpdateCustomer>{
 }
 
 class AddCustomer extends StatefulWidget {
+  final callBack;
+
+  const AddCustomer({Key key, this.callBack}) : super(key: key);
+
   @override
   _AddCustomerState createState() => _AddCustomerState();
 }
@@ -983,9 +1015,7 @@ class _AddCustomerState extends State<AddCustomer> {
                                       "address": address.text,
                                       "payment": payment
                                     }, (){
-                                      setState(() {
-                                        getCustomers = global.getCustomers();
-                                      });
+                                        widget.callBack();
                                     } );
                                   })),
                           alignment: Alignment.bottomRight,

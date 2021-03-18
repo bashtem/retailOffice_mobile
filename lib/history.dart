@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'global.dart';
 import 'notification.dart';
 
@@ -245,11 +246,11 @@ class _HistoryState extends State<History> with SingleTickerProviderStateMixin{
                               itemBuilder: (context, index) {
                                 return ListTile(
                                   dense: true,
-                                  title: (stockMovementList[index]['user']['store_id'] == stockMovementList[index]['receiving_store_id'])? Text(stockMovementList[index]['transfer_store']['title']) : Text(stockMovementList[index]['receive_store']['title']),
+                                  title: (Provider.of<GlobalFn>(context).getSession.storeId.toString() == stockMovementList[index]['receiving_store_id'])? Text(stockMovementList[index]['transfer_store']['title']) : Text(stockMovementList[index]['receive_store']['title']),
                                   subtitle: Row(
                                     children: <Widget>[
-                                      (stockMovementList[index]['user']['store_id'] == stockMovementList[index]['receiving_store_id'])? Text("STOCK IN ", style: TextStyle(color: Colors.green, ),) : Text("STOCK OUT ", style: TextStyle(color: Colors.red, ),),
-                                      (stockMovementList[index]['user']['store_id'] == stockMovementList[index]['receiving_store_id'])? Icon(Icons.arrow_downward, size: 14, color: Colors.green,) : Icon(Icons.arrow_upward, size: 14, color: Colors.red,)
+                                      (Provider.of<GlobalFn>(context).getSession.storeId.toString() == stockMovementList[index]['receiving_store_id'])? Text("STOCK IN ", style: TextStyle(color: Colors.green, ),) : Text("STOCK OUT ", style: TextStyle(color: Colors.red, ),),
+                                      (Provider.of<GlobalFn>(context).getSession.storeId.toString() == stockMovementList[index]['receiving_store_id'])? Icon(Icons.arrow_downward, size: 14, color: Colors.green,) : Icon(Icons.arrow_upward, size: 14, color: Colors.red,)
                                     ],
                                   ),
                                   trailing: Column(

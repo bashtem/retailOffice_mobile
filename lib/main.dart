@@ -79,9 +79,7 @@ class _LandingPageState extends State<LandingPage> {
         backgroundColor: Colors.white,
         body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.dark,
-          child: Container(
-            child:  Login(),
-          ),
+          child: Login(),
         )
     );
   }

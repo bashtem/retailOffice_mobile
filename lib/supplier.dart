@@ -146,7 +146,9 @@ class _SupplierState extends State<Supplier> with SingleTickerProviderStateMixin
                             global.addSupplierData['mail'] = email.text;
                             global.addSupplierData['address'] = address.text;
                             global.addSupplierData['website'] = url.text;
-                            global.addSupplier(context);
+                            global.addSupplier(context, (){
+                              setState(() { });
+                            });
                           },
                           child: Text("Add Supplier", style: TextStyle(color: Colors.white,),), color: Color(0xff1c4b82), shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)) ,),
                         ),
@@ -166,7 +168,9 @@ class _SupplierState extends State<Supplier> with SingleTickerProviderStateMixin
       showModalBottomSheet(
           context: context,
           builder:(BuildContext context){
-        return PickSupplier(data);
+        return PickSupplier(data, (){
+          setState(() { });
+        });
       });
     }
 
@@ -190,7 +194,9 @@ class _SupplierState extends State<Supplier> with SingleTickerProviderStateMixin
 
 class PickSupplier extends StatefulWidget{
   final data;
-  PickSupplier(this.data);
+  final callBack;
+
+  PickSupplier(this.data, this.callBack);
   @override
   PickSupplierState createState() => PickSupplierState();
 }
@@ -340,7 +346,9 @@ class PickSupplierState extends State<PickSupplier>{
                         child: RaisedButton(
                           onPressed: (){
                             global.updateSupplierData.addAll({'supId':data['sup_id'],'companyName':updateCompanyName.text, 'contactName':updateContactName.text, 'mobileNumber':updateMobile.text, 'mail':updateEmail.text, 'address':updateAddress.text, 'website':updateUrl.text});
-                            global.updateSupplier(context);
+                            global.updateSupplier(context, (){
+                              widget.callBack();
+                            });
                           },
                           child: Text("Update", style: TextStyle(color: Colors.white,),), color: Color(0xff1c4b82), shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)) ,),
                       ),

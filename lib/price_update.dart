@@ -131,6 +131,7 @@ class _PickItemState extends State<PickItem> {
   Map<String, TextEditingController> tieredQty;
   Map<String, TextEditingController> tieredPrice;
   List tieredPricesQty;
+  Map<int, TextEditingController> walkinPrice;
 
 
 
@@ -147,6 +148,7 @@ class _PickItemState extends State<PickItem> {
     tieredQty = {};
     tieredPricesQty = [];
     tieredPrice = {};
+    walkinPrice = {};
   }
 
   @override
@@ -225,7 +227,7 @@ class _PickItemState extends State<PickItem> {
         String tieredId = (each['item_tiered_price'].length > iter)? each['item_tiered_price'][iter]['id'].toString() : '0';
         tieredPricesQty.add({'id' : tieredId, 'qtyId' : each['qty_type']['qty_id'], 'qty' : tieredQty[id].text, 'price' : tieredPrice[id].text });
       });
-      return {'qtyId':each['qty_type']['qty_id'], 'costToSell':costToSell[each['qty_type']['qty_id']].text, 'costPrice':costPrice[each['qty_type']['qty_id']].text, 'salePrice':salePrice[each['qty_type']['qty_id']].text};
+      return {'qtyId':each['qty_type']['qty_id'], 'costToSell':costToSell[each['qty_type']['qty_id']].text, 'costPrice':costPrice[each['qty_type']['qty_id']].text, 'salePrice':salePrice[each['qty_type']['qty_id']].text, 'walkinPrice':walkinPrice[each['qty_type']['qty_id']].text };
     }).toList();
 
     global.priceUpdate.addAll({'itemId':selectedData['item_id'], 'prices':prices, 'tieredData' : tieredPricesQty});
@@ -241,19 +243,24 @@ class _PickItemState extends State<PickItem> {
       salePrice.clear();
       tieredQty.clear();
       tieredPrice.clear();
+      walkinPrice.clear();
       checked = true;
     }
     return Column(
       children: data.map((each){
+
         quantity.putIfAbsent(each['qty_type']['qty_id'], ()=>TextEditingController(text: global.genQtyFmt.format(double.parse(each['quantity'])) ));
         costToSell.putIfAbsent(each['qty_type']['qty_id'], ()=>TextEditingController(text: global.genQtyFmt.format(double.parse(each['item_price']['min_price'])) ));
         costPrice.putIfAbsent(each['qty_type']['qty_id'], ()=>TextEditingController(text: global.genQtyFmt.format(double.parse(each['item_price']['price'] ))));
         salePrice.putIfAbsent(each['qty_type']['qty_id'], ()=>TextEditingController(text: global.genQtyFmt.format(double.parse(each['item_price']['max_price'])) ));
+        walkinPrice.putIfAbsent(each['qty_type']['qty_id'], ()=>TextEditingController(text: global.genQtyFmt.format(double.parse(each['item_price']['walkin_price'])) ));
+
         [0,1,2].forEach((iter){
             var id = (each['item_tiered_price'].length > iter)? each['item_tiered_price'][iter]['id'].toString() : each['qty_type']['qty_id'].toString()+iter.toString()+"_";
             tieredQty.putIfAbsent(id, ()=>TextEditingController(text: ((each['item_tiered_price'].length > 0) && (each['item_tiered_price'].length > iter) )? global.genQtyFmt.format(double.parse(each['item_tiered_price'][iter]['qty'])) : '0') );
             tieredPrice.putIfAbsent(id, ()=>TextEditingController(text: ((each['item_tiered_price'].length > 0) && (each['item_tiered_price'].length > iter) )? global.genQtyFmt.format(double.parse(each['item_tiered_price'][iter]['price'])) : '0') );
         });
+
         return Column(
           children: <Widget>[
             Container(
@@ -318,6 +325,24 @@ class _PickItemState extends State<PickItem> {
                     ),
                     controller: salePrice[each['qty_type']['qty_id']],
                   ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Container(
+                  width: 100,
+                  child: TextField(
+                    keyboardType: TextInputType.numberWithOptions(),
+                    decoration: InputDecoration(
+                        labelText: "Walk-In Price"
+                    ),
+                    controller: walkinPrice[each['qty_type']['qty_id']],
+                  ),
+                ),
+                Container(
+                  width: 100,
                 ),
               ],
             ),

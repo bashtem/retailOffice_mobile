@@ -30,7 +30,7 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     gotoLogin();
-    return Container( 
+    return Container(
         height: MediaQuery.of(context).size.height,
         child: PageView(
           controller: _controller,
@@ -43,7 +43,6 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
 
   Widget homePage() {
     return new Container(
-      height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
         color: Color(0xFF1c4b82),
         image: DecorationImage(
@@ -95,9 +94,8 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
   }
 
   Widget loginPage() {
-    return SingleChildScrollView(
+    return SafeArea(
       child: Container(
-        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           color: Colors.white,
           image: DecorationImage(
@@ -109,19 +107,24 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
         ),
         child: new Column(
           children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(50.0),
-              child: Center(
-                child: Icon(
-                  Icons.store,
-                  color: Color(0xFF1c4b82),
-                  size: 50.0,
-                ),
+            Expanded(
+              flex: 1,
+              child: Container(),
+            ),
+            Center(
+              child: Icon(
+                Icons.store,
+                color: Color(0xFF1c4b82),
+                size: 50.0,
               ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Container(),
             ),
             new Row(
               children: <Widget>[
-                new Expanded(
+                new Flexible(
                   child: new Padding(
                     padding: const EdgeInsets.only(left: 40.0),
                     child: new Text(
@@ -153,7 +156,7 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  new Expanded(
+                  new Flexible(
                     child: TextField(
                       controller: username,
                       obscureText: false,
@@ -173,7 +176,7 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
             ),
             new Row(
               children: <Widget>[
-                new Expanded(
+                new Flexible(
                   child: new Padding(
                     padding: const EdgeInsets.only(left: 40.0),
                     child: new Text(
@@ -205,7 +208,7 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  new Expanded(
+                  new Flexible(
                     child: TextField(
                       controller: password,
                       obscureText: true,
@@ -220,9 +223,7 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
                 ],
               ),
             ),
-            Divider(
-              height: 24.0,
-            ),
+            SizedBox(height: 10,),
             new Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
@@ -245,13 +246,17 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
                 ),
               ],
             ),
-            new Container(
+            Expanded(
+              flex: 4,
+              child: Container(),
+            ),
+            Container(
               width: MediaQuery.of(context).size.width,
               margin: const EdgeInsets.only(left: 30.0, right: 30.0, top: 20.0),
               alignment: Alignment.center,
               child: new Row(
                 children: <Widget>[
-                  new Expanded(
+                  new Flexible(
                     child: new FlatButton(
                       shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0),
@@ -283,6 +288,7 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
                 ],
               ),
             ),
+            SizedBox(height: 20,)
           ],
         ),
       ),

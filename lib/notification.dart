@@ -138,6 +138,6 @@ void confirmDialogWithText(context, confirmMethod){
 
 void loading(context){
   ProgressDialog load;
-  load = ProgressDialog(context, type: ProgressDialogType.Normal);
+  load = ProgressDialog(context, type: ProgressDialogType.Normal, isDismissible: false);
   load.show();
 }
