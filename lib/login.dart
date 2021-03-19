@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard.dart';
 import 'global.dart';
 import 'notification.dart';
@@ -14,10 +15,16 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
   final username = TextEditingController();
   final password = TextEditingController();
   PageController _controller;
+  SharedPreferences pref;
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
+    SharedPreferences.getInstance().then((value){
+      if(value.getString("username") != null)
+        username.text = value.getString("username");
+    });
+
     _controller = new PageController(initialPage: 0, viewportFraction: 1.0);
   }
 
@@ -313,6 +320,8 @@ class _LoginScreen3State extends State<Login> with TickerProviderStateMixin {
       try{
         Map<String, dynamic> token = await globalFn.login(username.text, password.text);
         if(token['error'] == null){
+          SharedPreferences pref = await SharedPreferences.getInstance();
+          pref.setString("username", username.text);
           Navigator.of(context).pop();
           Navigator.of(context).push(MaterialPageRoute(builder:(BuildContext context)=> Dashboard()));
         }else{

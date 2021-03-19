@@ -219,20 +219,22 @@ class _PickItemState extends State<PickItem> {
   }
 
   void updatePrice(List data){
+    confirmDialog(context, (){
+      Navigator.of(context).pop();
+      tieredPricesQty.clear();
+      var prices = data.map((each){
+        [0,1,2].forEach((iter){
+          String id = (each['item_tiered_price'].length > iter)? each['item_tiered_price'][iter]['id'].toString() : each['qty_type']['qty_id'].toString()+iter.toString()+"_";
+          String tieredId = (each['item_tiered_price'].length > iter)? each['item_tiered_price'][iter]['id'].toString() : '0';
+          tieredPricesQty.add({'id' : tieredId, 'qtyId' : each['qty_type']['qty_id'], 'qty' : tieredQty[id].text, 'price' : tieredPrice[id].text });
+        });
+        return {'qtyId':each['qty_type']['qty_id'], 'costToSell':costToSell[each['qty_type']['qty_id']].text, 'costPrice':costPrice[each['qty_type']['qty_id']].text, 'salePrice':salePrice[each['qty_type']['qty_id']].text, 'walkinPrice':walkinPrice[each['qty_type']['qty_id']].text };
+      }).toList();
 
-    tieredPricesQty.clear();
-    var prices = data.map((each){
-      [0,1,2].forEach((iter){
-        String id = (each['item_tiered_price'].length > iter)? each['item_tiered_price'][iter]['id'].toString() : each['qty_type']['qty_id'].toString()+iter.toString()+"_";
-        String tieredId = (each['item_tiered_price'].length > iter)? each['item_tiered_price'][iter]['id'].toString() : '0';
-        tieredPricesQty.add({'id' : tieredId, 'qtyId' : each['qty_type']['qty_id'], 'qty' : tieredQty[id].text, 'price' : tieredPrice[id].text });
+      global.priceUpdate.addAll({'itemId':selectedData['item_id'], 'prices':prices, 'tieredData' : tieredPricesQty});
+      global.updatePrice(context).whenComplete((){
+        widget.inventoryFn();
       });
-      return {'qtyId':each['qty_type']['qty_id'], 'costToSell':costToSell[each['qty_type']['qty_id']].text, 'costPrice':costPrice[each['qty_type']['qty_id']].text, 'salePrice':salePrice[each['qty_type']['qty_id']].text, 'walkinPrice':walkinPrice[each['qty_type']['qty_id']].text };
-    }).toList();
-
-    global.priceUpdate.addAll({'itemId':selectedData['item_id'], 'prices':prices, 'tieredData' : tieredPricesQty});
-    global.updatePrice(context).whenComplete((){
-      widget.inventoryFn();
     });
   }
 

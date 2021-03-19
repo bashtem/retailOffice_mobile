@@ -31,10 +31,12 @@ class _DashboardState extends State<Dashboard> {
   TimeOfDay timeOfDay = TimeOfDay.fromDateTime(DateTime.now());
   String date;
   String storeTitle = '';
+  GlobalKey<ScaffoldState> _dashboardScaffoldKey;
 
   @override
   void initState() {
     super.initState();
+    _dashboardScaffoldKey = new GlobalKey<ScaffoldState>();
     global = GlobalFn();
     date = today.day.toString()+"-"+today.month.toString()+"-"+today.year.toString();
     setProfilePix();
@@ -63,6 +65,7 @@ class _DashboardState extends State<Dashboard> {
             dashboardData = snapshot.data;
           }
           return Scaffold(
+            key: _dashboardScaffoldKey,
               appBar: AppBar(
                 actions: <Widget>[
                   IconButton(
@@ -881,27 +884,36 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<bool> logout() {
-    return showDialog(
-          context: context,
-          builder: (context) => new AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0))),
-            content: new Text('You are about to Logout?'),
-            actions: <Widget>[
-              new FlatButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: new Text('No'),
-              ),
-              new FlatButton(
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-                child: new Text('Yes'),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    if(_dashboardScaffoldKey.currentState.isDrawerOpen)
+    {
+       Navigator.of(context).pop(true);
+       return Future.value(false);
+    }
+    else
+    {
+      return showDialog(
+        context: context,
+        builder: (context) => new AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+          content: new Text('You are about to Logout?'),
+          actions: <Widget>[
+            new FlatButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: new Text('No'),
+            ),
+            new FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: new Text('Yes'),
+            ),
+          ],
+        ),
+      ) ??
+          false;
+    }
+
   }
 
   void viewStores() {

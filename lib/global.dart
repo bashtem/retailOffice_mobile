@@ -19,7 +19,8 @@ class GlobalFn with ChangeNotifier{
   static String _clientId = '1';
   static String _clientSecret = 'oQFN96Gu1Ot7uKqG26A3JXO3eg2erGVq1PWPU0kh';
   static String _grantType = 'password';
-  static String _url = "http://192.168.1.3/digitalfish/public";
+  static String _url = "http://retailoffice.herokuapp.com/public";
+  // static String _url = "http://192.168.1.3/digitalfish/public";
   // static String _url = "http://www.digitalfisheries.com/portal/public";
   static Session session;
   static Map<String, String> sessionHeader;
@@ -29,6 +30,7 @@ class GlobalFn with ChangeNotifier{
   final Map<String, dynamic> updateSupplierData = Map();
   final Map<String, dynamic> purchaseData = Map();
   final Map<String, dynamic> stockTransferData = Map();
+  final Map<String, dynamic> stockTransferUnitData = Map();
   final Map<String, dynamic> creditData = Map();
   final Map<String, dynamic> payDebitData = Map();
   final Map<String, dynamic> payDiscountData = Map();
@@ -120,6 +122,24 @@ class GlobalFn with ChangeNotifier{
     }
   }
 
+  Future updateStockTransferUnit(BuildContext context) async{
+    loading(context);
+    stockTransferUnitData['time'] = time();
+    try{
+      var res = await http.post(_url + "/api/updatestocktransferunit", headers: sessionHeader, body: jsonEncode(stockTransferUnitData));
+      var data = json.decode(res.body);
+      Navigator.of(context).pop();
+      if(data['status'] == true) {
+        successNotify(context, data['response']);
+      }else {
+        failureNotify(context, data['response']);
+      }
+    }catch(e){
+      failureNotify(context, "Update Failed");
+    }
+
+  }
+
   Future updatePrice(BuildContext context) async{
     loading(context);
     priceUpdate['time'] = time();
@@ -205,7 +225,7 @@ class GlobalFn with ChangeNotifier{
     return data;
   }
 
-  Future savePurchase(BuildContext context) async{
+  Future savePurchase(BuildContext context, callBack) async{
     loading(context);
     try{
       var res = await http.post(_url + "/api/savepurchase", headers: sessionHeader, body: {"data":jsonEncode(purchaseData), "list":jsonEncode(purchaseList), "time":time()});
@@ -214,6 +234,7 @@ class GlobalFn with ChangeNotifier{
       Navigator.of(context).pop();
       if(data['status'] == true) {
         purchaseList.clear();
+        callBack();
         successNotify(context, data['response']);
       }else {
         failureNotify(context, data['response']);

@@ -343,17 +343,21 @@ class _PickItemState extends State<PickItem> {
 
 
   void stockTransfer(){
-    var conversionId = (selectedData['conversion'] != null)? selectedData['conversion']['conversion_id']:'';
-    global.stockTransferData.addAll({'itemId':selectedData['item_id'], 'conversionId':conversionId, 'fromQtyId':initialQtyId, 'toQtyId':convertedQtyId, 'transferQty':transferQty.text});
-    global.transferStock(context, (){
-      _itemDetails =  global.selectedInv(widget.itemId);
-      _itemDetails.whenComplete((){
-        checked = null;
-        transferQty.clear();
+    confirmDialog(context, (){
+      Navigator.of(context).pop();
+      var conversionId = (selectedData['conversion'] != null)? selectedData['conversion']['conversion_id']:'';
+      global.stockTransferData.addAll({'itemId':selectedData['item_id'], 'conversionId':conversionId, 'fromQtyId':initialQtyId, 'toQtyId':convertedQtyId, 'transferQty':transferQty.text});
+      global.transferStock(context, (){
+        _itemDetails =  global.selectedInv(widget.itemId);
+        _itemDetails.whenComplete((){
+          checked = null;
+          transferQty.clear();
+        });
+        setState((){});
+        widget.inventoryFn();
       });
-      setState((){});
-      widget.inventoryFn();
     });
+
   }
 
   Widget itemsQuantity(List data){

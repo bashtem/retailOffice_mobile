@@ -3,8 +3,6 @@ import 'dart:core';
 import 'personalisedSearch.dart';
 import 'global.dart';
 import 'notification.dart';
-//import 'package:provider/provider.dart';
-//import 'package:intl/intl.dart';
 
 
 class Inventory extends StatefulWidget{
@@ -218,7 +216,6 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
   TextEditingController reorderLevel;
   TextEditingController initialQty;
   TextEditingController convertedQty;
-  TextEditingController transferQty;
   Map<int, TextEditingController> quantity;
   Map<int, TextEditingController> costToSell;
   Map<int, TextEditingController> costPrice;
@@ -243,7 +240,6 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
     reorderLevel = TextEditingController();
     initialQty = TextEditingController();
     convertedQty = TextEditingController();
-    transferQty = TextEditingController();
     quantity = {};
     costToSell = {};
     costPrice = {};
@@ -294,7 +290,7 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
                     child: Text("Stock Item Details"),
                   ),
                   Tab(
-                    child: Text("Stock Transfer"),
+                    child: Text("Stock Transfer Setup"),
                   ),
                 ]
             ),
@@ -336,74 +332,7 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
                                   ]
                                 ),
                                 SizedBox(
-                                  height:15.0,
-                                ),
-                                Wrap(
-                                  direction: Axis.vertical,
-                                    children: [
-                                      Text("Unit Formula:",
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            color: Color(0xff1c4b82)
-                                        ),
-                                      ),
-                                      Container(
-                                        width: MediaQuery.of(context).size.width * 0.88,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(5),
-                                          border: Border.all(
-                                            color: Color(0xff1c4b82),
-                                            width: 1
-                                          )
-                                        ),
-                                        child: Column(
-                                          children: <Widget>[
-                                           Row(
-                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                             children: <Widget>[
-                                               Text("FROM:",
-                                                style: TextStyle(
-                                                  color: Color(0xff1c4b82)
-                                                ),
-                                               ),
-                                               Container(
-                                                   width: 100,
-                                                   child: IgnorePointer(ignoring: true,
-                                                     child: DropDownWidget(qtyTypesWidgets, (picked){
-                                                       fromQtyid = picked;
-                                                     }, selected: initialQtyId,),
-                                                   )
-                                               ),
-                                               Container(
-                                                 width: 100,
-                                                 child: numberTextField('Quantity', initialQty)
-                                               ),
-                                             ],
-                                           ),
-                                           Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                              children: <Widget>[
-                                                Text("TO:      ",
-                                                  style: TextStyle(
-                                                      color: Color(0xff1c4b82)
-                                                  ),
-                                                ),
-                                                Container(
-                                                    width: 100,
-                                                    child: DropDownWidget(filteredQtyTypesWidgets, (picked){
-                                                        toQtyid = picked;
-                                                    }, selected: convertedQtyId)
-                                                ),
-                                                Container(
-                                                  width: 100,
-                                                  child: numberTextField('Quantity', convertedQty),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ]
+                                  height:10.0,
                                 ),
                                 TextField(
                                   decoration: InputDecoration(
@@ -434,7 +363,10 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
                                   onPressed: (){
                                     updateItemDetails(selectedData['item_qty']);
                                   },
-                                )
+                                ),
+                                SizedBox(
+                                  height: 20.0,
+                                ),
                               ],
                             ),
                           ),
@@ -493,7 +425,9 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
                                               ),
                                               Container(
                                                   width: 100,
-                                                  child: IgnorePointer(ignoring: true,child: DropDownWidget(qtyTypesWidgets, (picked){}, selected: initialQtyId ))
+                                                  child: IgnorePointer(ignoring: true,child: DropDownWidget(qtyTypesWidgets, (picked){
+                                                    fromQtyid = picked;
+                                                  }, selected: initialQtyId ))
                                               ),
                                               Container(
                                                 width: 100,
@@ -502,7 +436,6 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
                                                   decoration: InputDecoration(
                                                       labelText: "Quantity"
                                                   ),
-                                                  readOnly: true,
                                                   controller: initialQty,
                                                 ),
                                               ),
@@ -518,7 +451,9 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
                                               ),
                                               Container(
                                                   width: 100,
-                                                  child: IgnorePointer(ignoring: true, child: DropDownWidget(filteredQtyTypesWidgets,(picked){}, selected: convertedQtyId))
+                                                  child: DropDownWidget(filteredQtyTypesWidgets,(picked){
+                                                    toQtyid = picked;
+                                                  }, selected: convertedQtyId)
                                               ),
                                               Container(
                                                 width: 100,
@@ -527,7 +462,6 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
                                                   decoration: InputDecoration(
                                                       labelText:  "Quantity"
                                                   ),
-                                                  readOnly: true,
                                                   controller: convertedQty,
                                                 ),
                                               ),
@@ -539,40 +473,7 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
                                   ]
                               ),
                               SizedBox(
-                                height:15.0,
-                              ),
-                              Wrap(
-                                  children: [
-                                    Text("Bigger Unit:",
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          color: Color(0xff1c4b82)
-                                      ),
-                                    ),
-                                    IgnorePointer(ignoring: true, child: DropDownWidget(qtyTypesWidgets, (picked){}, selected:initialQtyId,)),
-                                  ]
-                              ),
-                              TextField(
-                                decoration: InputDecoration(
-                                  labelText: "Quantity of Big Unit to Transfer:"
-                                ),
-                                keyboardType: TextInputType.numberWithOptions(),
-                                controller:transferQty,
-                              ),
-                              SizedBox(height:15.0),
-                              Wrap(
-                                children: [
-                                  Text("Smaller Unit:",
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        color: Color(0xff1c4b82)
-                                    ),
-                                  ),
-                                  IgnorePointer(ignoring: true, child: DropDownWidget(filteredQtyTypesWidgets, (picked){}, selected:convertedQtyId,)),
-                                ]
-                              ),
-                              SizedBox(
-                                height: 20.0,
+                                height: 50.0,
                               ),
                               RaisedButton(
                                 child: Text("SAVE",
@@ -585,7 +486,7 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
                                     borderRadius: BorderRadius.circular(5.0)
                                 ),
                                 onPressed: (){
-                                  stockTransfer();
+                                  updateStockTransferUnit();
                                 },
                               ),
                             ],
@@ -605,27 +506,37 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
   }
 
   void updateItemDetails(List data){
-    var qtyPrice = data.map((each){
-      return {'qtyId':each['qty_type']['qty_id'], 'qty':quantity[each['qty_type']['qty_id']].text, 'costToSell':costToSell[each['qty_type']['qty_id']].text, 'costPrice':costPrice[each['qty_type']['qty_id']].text, 'salePrice':salePrice[each['qty_type']['qty_id']].text};
-    }).toList();
-    global.updateItemData.addAll({ 'itemId':selectedData['item_id'], "itemName":itemName.text, 'itemCategory':pickedItemCategory, 'fromQtyId':fromQtyid, 'toQtyId':toQtyid, 'initialQty':initialQty.text, 'convertedQty':convertedQty.text, 'manufacturer': manufacturer.text, 'minStockLevel':minStockLevel.text, 'reorderLevel' : reorderLevel.text, 'qtyPrice':qtyPrice });
-    global.updateSelectedInv(context).whenComplete((){
-      widget.inventoryFn();
+    confirmDialog(context, (){
+      Navigator.of(context).pop();
+      var qtyPrice = data.map((each){
+        return {'qtyId':each['qty_type']['qty_id'], 'qty':quantity[each['qty_type']['qty_id']].text, 'costToSell':costToSell[each['qty_type']['qty_id']].text, 'costPrice':costPrice[each['qty_type']['qty_id']].text, 'salePrice':salePrice[each['qty_type']['qty_id']].text};
+      }).toList();
+      global.updateItemData.addAll({ 'itemId':selectedData['item_id'], "itemName":itemName.text, 'itemCategory':pickedItemCategory,  'manufacturer': manufacturer.text, 'minStockLevel':minStockLevel.text, 'reorderLevel' : reorderLevel.text, 'qtyPrice':qtyPrice });
+      global.updateSelectedInv(context).whenComplete((){
+        widget.inventoryFn();
+      });
     });
   }
 
-  void stockTransfer(){
-    var conversionId = (selectedData['conversion'] != null)? selectedData['conversion']['conversion_id']:'';
-    global.stockTransferData.addAll({'itemId':selectedData['item_id'], 'conversionId':conversionId, 'fromQtyId':fromQtyid, 'toQtyId':toQtyid, 'transferQty':transferQty.text});
-    global.transferStock(context, (){
-      _itemDetails =  global.selectedInv(widget.itemId);
-      _itemDetails.whenComplete((){
-        checked = null;
-        transferQty.clear();
+  void updateStockTransferUnit(){
+    if(initialQty.text == "" || convertedQty.text == "")
+    {
+      failureNotify(context, "Invalid Quantity Supplied");
+    }
+    else
+    {
+      confirmDialog(context, (){
+        Navigator.of(context).pop();
+        global.stockTransferUnitData.addAll({
+          'itemId': selectedData['item_id'],
+          'fromQtyId':fromQtyid,
+          'toQtyId':toQtyid,
+          'initialQty':initialQty.text,
+          'convertedQty':convertedQty.text,
+        });
+        global.updateStockTransferUnit(context);
       });
-      setState((){});
-      widget.inventoryFn();
-    });
+    }
   }
 
   Widget itemsQtyTypes(List data){
@@ -713,16 +624,6 @@ class _PickItemState extends State<PickItem> with SingleTickerProviderStateMixin
           );
         }
       ).toList(),
-    );
-  }
-
-  Widget numberTextField(label, data){
-    return TextField(
-      keyboardType: TextInputType.numberWithOptions(),
-      decoration: InputDecoration(
-        labelText: label
-      ),
-      controller: data,
     );
   }
 

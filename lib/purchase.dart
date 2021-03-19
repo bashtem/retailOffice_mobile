@@ -76,7 +76,9 @@ class _PurchaseState extends State<Purchase>{
                 onPressed: (){
                   if(global.purchaseList.length > 0)
                   Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                    return PurchaseCart();
+                    return PurchaseCart(callBack: (){
+                      setState(() { });
+                    },);
                   }));
             }),
           ],
@@ -204,6 +206,11 @@ class _PurchaseState extends State<Purchase>{
 }
 
 class PurchaseCart extends StatefulWidget{
+
+  final callBack;
+
+  const PurchaseCart({Key key, this.callBack}) : super(key: key);
+
   @override
   PurchaseCartState createState() => PurchaseCartState();
 }
@@ -356,7 +363,9 @@ class PurchaseCartState extends State<PurchaseCart>{
   }
 
   void savePurchase(){
-    global.savePurchase(context);
+    global.savePurchase(context, (){
+      widget.callBack();
+    });
   }
 
 }

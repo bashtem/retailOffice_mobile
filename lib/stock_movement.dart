@@ -237,10 +237,13 @@ class _PickItemState extends State<PickItem> {
                         onPressed:(){
                           if(_formKeyStockMovement.currentState.validate()){
                               _formKeyStockMovement.currentState.save();
-                              var data = {"itemId":selectedData["item_id"], "receivingStoreId" : selectedStore, "qtyId" : selectedUnit, "quantity" : moveQty, "time" : global.time()};
-                              global.stockMovement(context, data, (){
-                                widget.inventoryFn();
-                              } );
+                              confirmDialog(context, (){
+                                Navigator.of(context).pop();
+                                var data = {"itemId":selectedData["item_id"], "receivingStoreId" : selectedStore, "qtyId" : selectedUnit, "quantity" : moveQty, "time" : global.time()};
+                                global.stockMovement(context, data, (){
+                                  widget.inventoryFn();
+                                } );
+                              });
                           }
                         },
                       ),
